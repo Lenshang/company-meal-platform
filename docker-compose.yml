@@ -1,0 +1,32 @@
+networks:
+  companymeal-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.2.0/24
+          gateway: 192.168.2.1
+services:
+  companymeal-backend:
+    build: ./backend
+    networks:
+      - companymeal-net
+    container_name: companymeal-backend
+    env_file:
+      - 'env.${ENV}'
+    volumes:
+      - "/home/ShareFolder:/home/ShareFolder"
+      - "/home/DataFolder:/home/DataFolder"
+      - "./config/backend_config.py:/app/config/config_${ENV}.py"
+    ports:
+      - 8992:80/tcp
+    restart: always
+  companymeal-front:
+    build: ./front
+    networks:
+      - companymeal-net
+    env_file:
+      - 'env.${ENV}'
+    container_name: companymeal-front
+    ports:
+      - 8991:80/tcp
+    restart: always
